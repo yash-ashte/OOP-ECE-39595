@@ -11,6 +11,7 @@ BishopPiece::BishopPiece(ChessBoard &board, Color col, int startRow, int startCo
 
 
 bool BishopPiece::canMoveToLocation(int toRow, int toColumn){
+    std::cout<<"here\n";
     int crow = getRow();
     int ccol = getColumn();
     //std::cout << "nishop move" <<std::endl;
@@ -20,20 +21,25 @@ bool BishopPiece::canMoveToLocation(int toRow, int toColumn){
     //IMPLEMENT THISS
     if (crow - toRow == ccol - toColumn)
     {
+        std::cout<<"here2\n";
         int lim = crow - toRow;
         if (lim < 0)
         {
             for (int i = 1; i <= abs(lim); i++)
             {
+                std::cout<<"here3\n";
                 if ((crow + i) == toRow && (ccol + i) == toColumn)
                 {   
+                    std::cout<<"here4\n";
                    if (bard.at(toRow).at(toColumn) == nullptr)
                     {
                         return true;
                     }
                     else {
+                        std::cout<<"her5\n";
                         if ((bard.at(toRow).at(toColumn))->getColor() == getColor())
                         {
+                            std::cout<<"here6\n";
                             return false;
                         }
                         else {

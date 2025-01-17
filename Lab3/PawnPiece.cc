@@ -10,137 +10,40 @@ PawnPiece::PawnPiece(ChessBoard &board, Color col, int startRow, int startColumn
     : ChessPiece(board, col, startRow, startColumn, type) { }
 
 
-bool PawnPiece::canMoveToLocation(int toRow, int toColumn){
+bool PawnPiece::canMoveToLocation(int toRow, int toColumn) {
     int crow = getRow();
     int ccol = getColumn();
-    //std::cout << crow <<" "<<ccol<<std::endl;
-    std::vector<std::vector<ChessPiece*>>& bard = getBoard().getBoardVec();
-    //std::cout<<"here\n";
-    if (getColor() == Black)
-    {   
-        if (crow == 1 && crow + 2 == toRow && ccol == toColumn)
-        {
-            if (bard.at(toRow).at(ccol) == nullptr && bard.at(toRow - 1).at(ccol) == nullptr )
-            {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        
-        if (crow + 1 != toRow)
-        {
-            return false;
-        }
-        if (ccol == toColumn)
-        {   
-            if (bard.at(toRow).at(ccol) == nullptr)
-            {
-                return true;
-            }
-            else {
-                /*if (bard.at(toRow).at(ccol)->getColor() == getColor())
-                {   
-                    return false;
-                }
-                else {
-                    return true;
-                }*/
-               return false;
-                
-            }
-            
-        }
-        else if (ccol + 1 == toColumn || ccol - 1 == toColumn)
-        {
-            if (bard.at(toRow).at(toColumn) == nullptr)
-            {
-                return false;
-            }
-            else {
-                
-                    if (bard.at(toRow).at(ccol)->getColor() == getColor())
-                    {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                
-                
-            }
-            
-        }
-        else {
-            return false;
-        }
-        
-        
+    auto& boardVec = getBoard().getBoardVec();
+    int direction = (getColor() == White) ? -1 : 1;
+
+    // Single-step forward
+    if (toRow == crow + direction && toColumn == ccol && boardVec[toRow][toColumn] == nullptr) {
+        return true;
     }
-    else if (getColor() == White){
-        if ((crow == getBoard().getNumRows() - 2) && crow - 2 == toRow && ccol == toColumn)
-        {   
-            if (bard.at(toRow).at(ccol) == nullptr && bard.at(toRow + 1).at(ccol) == nullptr )
-            {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        //std::cout<<"here2\n";
-        if (crow - 1 != toRow)
-        {
-            return false;
-        }
-        if (ccol == toColumn)
-        {
-            if (bard.at(toRow).at(ccol) == nullptr)
-            {
-                return true;
-            }
-            else {
-                /*if (bard.at(toRow).at(ccol)->getColor() == getColor())
-                {
-                    return false;
-                }
-                else {
-                    return true;
-                }*/
-               return false;
-                
-            }
-            
-        }
-        else if (ccol + 1 == toColumn || ccol - 1 == toColumn)
-        {   
-            //std::cout<<"here3\n";
-            if (bard.at(toRow).at(toColumn) == nullptr)
-            {
-                return false;
-            }
-            else {
-                //std::cout<<"here4\n";
-                if (bard.at(toRow).at(toColumn)->getColor() == getColor())
-                {
-                    //std::cout<<"here5\n";
-                    return false;
-                }
-                else {
-                   // std::cout<<"here6\n";
-                    return true;
-                }
-                
-            }
-            
-        }
-        else {
-            return false;
-        }
-        
+
+    // Two-step forward
+    if (toRow == crow + 2 * direction && toColumn == ccol &&
+        crow == (getColor() == White ? 6 : 1) &&
+        boardVec[toRow][toColumn] == nullptr &&
+        boardVec[crow + direction][toColumn] == nullptr) {
+        return true;
     }
-    return true;
+
+    // Capture diagonally
+    if (toRow == crow + direction && (toColumn == ccol - 1 || toColumn == ccol + 1)) {
+        ChessPiece* target = boardVec[toRow][toColumn];
+        if (target != nullptr && target->getColor() != getColor()) {
+            return true;
+        }
+
+        // Check en passant
+        auto epTarget = getBoard().getEnPassantTarget();
+        if (epTarget.first == toRow && epTarget.second == toColumn) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 const char* PawnPiece::toString(){

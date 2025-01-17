@@ -23,6 +23,9 @@ namespace Student
          * *(board.at(row).at(col)) returns the ChessPiece object itself.
          */
         std::vector<std::vector<ChessPiece *>> board;
+        std::pair<int, int> enPassantTarget = {-1, -1};
+        float wScore = 0;
+        float bScore = 0;
 
     public:
         /**
@@ -135,6 +138,9 @@ namespace Student
         std::ostringstream displayBoard();
 
         std::vector<std::vector<ChessPiece *>>& getBoardVec();
+        std::pair<int, int> getEnPassantTarget() { return enPassantTarget; }
+        float scoreBoard();
+        float getHighestNextScore();
 
     };
 
